@@ -5,38 +5,41 @@
     <div class="col-3">
         <div class="card">
                 <div class="card-body">
-                    <form action="{{route('admin#createPost')}}" method="POST" enctype="multipart/form-data">
+                    <form action="{{route('admin#postUpdate',$postDetails['post_id'])}}" method="POST" enctype="multipart/form-data">
                         @csrf
                     <div class="form-group">
                         <label for="">Title</label>
-                        <input name="postTitle" type="text" placeholder="Enter Your Post Title" class="form-control" value="{{old('postTitle')}}">
+                        <input name="postTitle" value="{{old('postTitle',$postDetails['title'])}}" type="text" placeholder="Enter Your Post Title" class="form-control">
                         @error('postTitle')
                             <div class="text-danger">{{ $message }}</div>
                         @enderror
                     </div>
                     <div class="form-group">
                         <label for="">Post Description</label>
-                        <textarea name="postDescription" type="text" cols="30" rows="10"class="form-control" placeholder="Enter Your Post Description">{{old('postDescription')}}</textarea>
+                        <textarea  name="postDescription" type="text" cols="30" rows="10"class="form-control" placeholder="Enter Your Post Description">{{$postDetails['description']}}</textarea>
                         @error('postDescription')
                             <div class="text-danger">{{ $message }}</div>
                         @enderror
                     </div>
                     <div class="form-group">
-                        <label for="">Image</label>
-                        <input type="file" value="old('postImage')" name="postImage" class="form-control">
+                        <label for="">Image</label> <br>
+                        <img width="100%" class="rounded shadow" height="100%"
+                            @if ($postDetails['image']==null) src="{{asset('default/default.png')}}"
+                            @else  src="{{asset('postImage/'.$postDetails['image'])}}" @endif>
+                        <input class="mt-2" name="postImage" value="{{old('postImage',$postDetails['image'])}}" type="file" class="form-control">
                     </div>
                     <div class="form-group">
-                            <select name="postDescriptionName" class="form-control">
+                            <select value="{{$postDetails['category_id']}}" name="postDescriptionName" class="form-control">
                                 <option value="">Choose Category</option>
                                 @foreach ($category as $item)
-                                <option value="{{$item['category_id']}}">{{$item['title']}}</option>
+                                <option value="{{$item['category_id']}}" @if ($item['category_id'] == $postDetails['category_id']) selected @endif>{{$item['title']}}</option>
                                 @endforeach
                             </select>
                             @error('postDescriptionName')
                             <div class="text-danger">{{ $message }}</div>
                             @enderror
                     </div>
-                    <button class="btn btn-info" type="submit">Post</button>
+                    <button class="btn btn-info" type="submit">Update</button>
                 </form>
                 </div>
         </div>

@@ -57,7 +57,33 @@ class PostController extends Controller
         return back();
     }
 
+    //update post
+    public function updatePostPage($id){
+        $category = Category::get();
+        $postDetails = Post::where('post_id',$id)->first();
+        $post = Post::get();
+        // dd($postDetails->toArray());
+        return view('admin.post.update',compact('category','postDetails','post'));
+    }
 
+    //postUpdate
+    public function postUpdate($id,Request $request){
+        $validation = $this->postValidationCheck($request);
+        if($validation->fails()){
+            return back()
+                        ->withErrors($validation)
+                        ->withInput();
+        }
+        $data = $this->postUpdateData($request);
+        if(isset($request->postImage)){
+            $this->storeNewUpdate($id,$request,$data);
+        }else{
+            Post::where('post_id',$id)->update($data);
+
+        }
+        return back();
+        // dd($data);
+    }
 
     //getPostData
     private function getPostData($request,$fileName){
@@ -68,6 +94,43 @@ class PostController extends Controller
             'category_id' => $request->postDescriptionName,
             'created_at' => Carbon::now(),
             'update_at' => Carbon::now(),
+        ];
+    }
+
+    // store new update
+    private function storeNewUpdate($id,$request,$data){
+        // get image name
+        $file = $request->file('postImage');
+        $fileName = uniqid().'_'.$file->getClientOriginalName();
+
+        // store image name
+        $data['image'] = $fileName;
+
+        //replace the image name
+        $postData = Post::where('post_id',$id)->first();
+        $dbImageName = $postData['image'];
+
+        // if have old image delete,new image added
+        if(File::exists(public_path().'/postImage/'.$dbImageName)){
+            File::delete(public_path().'/postImage/'.$dbImageName);
+        }
+
+        // file updated
+        $file->move(public_path().'/postImage',$fileName);
+
+        // id's data updated
+        Post::where('post_id',$id)->update($data);
+    }
+
+    // get post update data
+    private function postUpdateData($request){
+        return [
+            'title'=> $request->postTitle,
+            'description' => $request->postDescription,
+            'image' => $request->postImage,
+            'category_id' => $request->postDescriptionName,
+            'created_at' => Carbon::now(),
+
         ];
     }
 

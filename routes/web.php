@@ -60,8 +60,11 @@ Route::middleware([
     Route::get('post', [PostController::class, 'index'])->name('admin#post');
     Route::post('post/create',[PostController::class, 'createPost'])->name('admin#createPost');
     Route::get('post/deletePost/{id}',[PostController::class,'deletePost'])->name('admin#deletePost');
+    Route::get('post/updatePostPage/{id}',[PostController::class,'updatePostPage'])->name('admin#updatePostPage');
+    Route::post('post/update/{id}',[PostController::class,'postUpdate'])->name('admin#postUpdate');
     //Profile
     Route::get('profile', [ProfileController::class, 'index'])->name('admin#profile');
     //Trend
-    Route::get('trend', [TrendPostController::class, 'index'])->name('admin#trend');
+    Route::get('trendPost', [TrendPostController::class, 'index'])->name('admin#trend');
+    Route::get('trendPost/details/{id}',[TrendPostController::class,'details'])->name('admin#trendPostDetails');
 });
